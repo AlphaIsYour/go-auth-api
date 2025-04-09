@@ -2,19 +2,21 @@ package main
 
 import (
 	"go-auth-api/controllers"
+	"go-auth-api/middleware"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	r := gin.Default()
+	r.Use(middleware.CORSMiddleware())
 
-	// Routes
 	r.POST("/register", controllers.Register)
 	r.POST("/login", controllers.Login)
 
-	// Protected route (nanti pakai middleware JWT)
-	r.GET("/profile", controllers.Profile)
+	protected := r.Group("/")
+	protected.Use(middleware.AuthMiddleware())
+	protected.GET("/profile", controllers.Profile)
 
-	r.Run(":8080") // jalanin di http://localhost:8080
+	r.Run(":8080")
 }

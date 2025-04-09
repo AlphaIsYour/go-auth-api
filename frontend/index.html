@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kedai Auth App</title>
+  </head>
+  <body>
+    <h1>Simple Login & Register (Gin + Go)</h1>
+
+    <h2>Register</h2>
+    <input type="text" id="reg-username" placeholder="Username" />
+    <input type="password" id="reg-password" placeholder="Password" />
+    <button onclick="register()">Register</button>
+
+    <h2>Login</h2>
+    <input type="text" id="login-username" placeholder="Username" />
+    <input type="password" id="login-password" placeholder="Password" />
+    <button onclick="login()">Login</button>
+
+    <h2>Profile</h2>
+    <button onclick="getProfile()">Lihat Profile</button>
+    <pre id="result"></pre>
+
+    <script>
+      let token = "";
+
+      function register() {
+        fetch("http://localhost:8080/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: document.getElementById("reg-username").value,
+            password: document.getElementById("reg-password").value,
+          }),
+        })
+          .then((res) => res.text())
+          .then(alert);
+      }
+
+      function login() {
+        fetch("http://localhost:8080/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: document.getElementById("login-username").value,
+            password: document.getElementById("login-password").value,
+          }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            token = data.token;
+            alert("Login sukses! Token disimpan.");
+          });
+      }
+
+      function getProfile() {
+        fetch("http://localhost:8080/profile", {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            document.getElementById("result").innerText = JSON.stringify(
+              data,
+              null,
+              2
+            );
+          });
+      }
+    </script>
+  </body>
+</html>
